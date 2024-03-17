@@ -10,7 +10,7 @@ const Index = () => {
   const [password, setPassword] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
   const [message, setMessage] = useState("");
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState({});
 
   const sampleUsers = [
     { id: 1, name: "John Doe", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w1MDcxMzJ8MHwxfHNlYXJjaHwxfHxtYWxlJTIwYXZhdGFyfGVufDB8fHx8MTcxMDYxMTg2OHww&ixlib=rb-4.0.3&q=80&w=1080" },
@@ -34,8 +34,11 @@ const Index = () => {
   };
 
   const handleSendMessage = () => {
-    if (message.trim() !== "") {
-      setMessages([...messages, { text: message, isSent: true }]);
+    if (message.trim() !== "" && selectedUser) {
+      setMessages((prevMessages) => ({
+        ...prevMessages,
+        [selectedUser.id]: [...(prevMessages[selectedUser.id] || []), { text: message, isSent: true }],
+      }));
       setMessage("");
     }
   };
@@ -97,7 +100,7 @@ const Index = () => {
           {selectedUser ? (
             <>
               <Box h="300px" overflowY="auto" mb={4}>
-                {messages.map((msg, index) => (
+                {(messages[selectedUser?.id] || []).map((msg, index) => (
                   <Box key={index} p={2} borderWidth={1} borderRadius="md" alignSelf={msg.isSent ? "flex-end" : "flex-start"} bg={msg.isSent ? "blue.100" : "gray.100"} maxW="80%">
                     {msg.text}
                   </Box>
